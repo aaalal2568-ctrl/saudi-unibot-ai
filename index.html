@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#006C35">
+  <meta name="description" content="Saudi UniBot - Your Saudi University Assistant">
+  <title>Saudi UniBot AI | University Assistant</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<template id="mascotTemplate">
+  <div class="student-mascot">
+    <svg viewBox="0 0 120 120"
+         xmlns="http://www.w3.org/2000/svg"
+         role="img"
+         aria-label="Animated Saudi student">
+      <path d="M17 120 Q17 85 45 82 L75 82 Q103 85 103 120Z" fill="#006C35"/>
+      <rect x="51" y="73" width="18" height="18" rx="6" fill="#DBA47F"/>
+      <ellipse cx="60" cy="49" rx="29" ry="34" fill="#E9B78F"/>
+      <path d="M31 45 Q22 13 47 11 Q62 1 79 15 Q94 20 88 47 L81 35 Q64 38 51 27 Q41 41 32 39Z" fill="#25352C"/>
+      <ellipse cx="31" cy="52" rx="5" ry="9" fill="#DDA982"/>
+      <ellipse cx="89" cy="52" rx="5" ry="9" fill="#DDA982"/>
+      <g class="mascot-eyes">
+        <ellipse cx="49" cy="50" rx="3" ry="4" fill="#26352B"/>
+        <ellipse cx="71" cy="50" rx="3" ry="4" fill="#26352B"/>
+      </g>
+      <path d="M43 42 Q49 39 54 42 M66 42 Q72 39 77 42"
+            stroke="#26352B" stroke-width="2.5"
+            fill="none" stroke-linecap="round"/>
+      <path d="M51 65 Q60 73 69 65"
+            stroke="#A85B50" stroke-width="3"
+            fill="none" stroke-linecap="round"/>
+      <path d="M44 82 L60 96 L76 82 L69 102 L60 98 L51 102Z"
+            fill="#FFFFFF"/>
+      <rect x="27" y="98" width="66" height="22" rx="5" fill="#DDECE4"/>
+      <circle cx="60" cy="109" r="5" fill="#00994D"/>
+    </svg>
+  </div>
+</template>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo mascot-slot"></div>
+      <div>
+        <h2>Saudi UniBot AI</h2>
+        <p>University Assistant</p>
+      </div>
+    </div>
+
+    <div class="saudi-label">🇸🇦 Made for Saudi Students</div>
+
+    <button id="newChat" class="new-chat">
+      + New Conversation
+    </button>
+
+    <div class="sidebar-title">YOUR UNIVERSITY</div>
+
+    <select id="universitySelect" class="university-select">
+      <option value="">Select Your University</option>
+      <option>Jazan University</option>
+      <option>King Saud University</option>
+      <option>King Abdulaziz University</option>
+      <option>King Khalid University</option>
+      <option>King Faisal University</option>
+      <option>Imam Abdulrahman Bin Faisal University</option>
+      <option>Princess Nourah University</option>
+      <option>Umm Al-Qura University</option>
+      <option>Taibah University</option>
+      <option>Qassim University</option>
+      <option>University of Tabuk</option>
+      <option>Najran University</option>
+      <option>University of Hail</option>
+      <option>Taif University</option>
+      <option>Saudi Electronic University</option>
+      <option>Imam Mohammad Ibn Saud Islamic University</option>
+      <option>Islamic University of Madinah</option>
+      <option>Al Jouf University</option>
+      <option>Northern Border University</option>
+      <option>University of Bisha</option>
+      <option>University of Hafr Al Batin</option>
+      <option>Other Saudi University</option>
+    </select>
+
+    <div class="sidebar-title">STUDENT SERVICES</div>
+
+    <nav class="topics">
+      <button data-question="When are final exams?">📅 Academic Calendar</button>
+      <button data-question="How do I register for courses?">📚 Course Registration</button>
+      <a href="gpa.html">📊 GPA Calculator</a>
+      <button data-question="How do student stipends work?">💰 Student Stipends</button>
+      <button data-question="What is cooperative training?">💼 Cooperative Training</button>
+      <button data-question="What e-learning services are available?">💻 E-Learning</button>
+      <button data-question="How can I contact academic support?">💬 Academic Support</button>
+      <button data-question="What are graduation requirements?">📖 Graduation Requirements</button>
+    </nav>
+
+    <div class="sidebar-title">QUICK LINKS</div>
+
+    <nav class="topics">
+      <a href="https://www.moe.gov.sa/" target="_blank" rel="noopener noreferrer">
+        🌐 Ministry of Education
+      </a>
+      <a href="https://www.saudiairlines.com/" target="_blank" rel="noopener noreferrer" class="hidden-link" hidden></a>
+      <button id="officialWebsite" type="button">
+        🔗 University Website
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p>🇸🇦 Saudi UniBot AI • Version 2.0</p>
+      <small>Independent Student Project</small>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="header">
+      <div class="header-left">
+        <div class="header-logo mascot-slot"></div>
+        <div>
+          <h1>Saudi University Assistant</h1>
+          <p id="universityDisplay">Your smart academic companion</p>
+        </div>
+      </div>
+      <div class="status">
+        <span class="status-dot"></span>
+        Online
+      </div>
+    </header>
+
+    <section class="chat-container"
+             id="chatMessages"
+             aria-live="polite"
+             aria-label="Chat messages"></section>
+
+    <div class="chat-bottom">
+      <div class="suggestions">
+        <button data-question="When are final exams?">📅 Final Exams</button>
+        <a href="gpa.html">📊 GPA Calculator</a>
+        <button data-question="How do student stipends work?">💰 Stipends</button>
+        <button data-question="What is cooperative training?">💼 Training</button>
+      </div>
+
+      <form id="chatForm" class="chat-form">
+        <input type="text"
+               id="userInput"
+               placeholder="Ask in English or Arabic..."
+               maxlength="500"
+               autocomplete="off"
+               required>
+        <button type="submit" id="sendButton" aria-label="Send message">➤</button>
+      </form>
+
+      <p class="disclaimer">
+        Independent student project. Verify official university information.
+      </p>
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

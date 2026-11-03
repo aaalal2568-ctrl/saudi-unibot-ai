@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#006C35">
+  <title>GPA Calculator | Saudi UniBot AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="gpa-page">
+  <div class="gpa-card">
+
+    <a href="index.html" class="back-link">
+      ← Back to Saudi UniBot AI
+    </a>
+
+    <h1>📊 GPA Calculator</h1>
+    <p>
+      Calculate your semester and cumulative GPA.
+      Choose the grade points used by your university.
+    </p>
+
+    <div class="gpa-field">
+      <label for="gpaScale">GPA Scale</label>
+      <select id="gpaScale">
+        <option value="5">5.0 Scale</option>
+        <option value="4">4.0 Scale</option>
+      </select>
+    </div>
+
+    <div class="gpa-section">
+      <h2>Semester GPA</h2>
+      <p>Add your courses, credit hours, and grade points.</p>
+
+      <div id="courses"></div>
+
+      <div class="gpa-actions">
+        <button class="gpa-btn" id="addCourse" type="button">
+          + Add Course
+        </button>
+        <button class="gpa-btn" id="calculate" type="button">
+          Calculate Semester GPA
+        </button>
+      </div>
+
+      <div class="gpa-result">
+        <span>Your Semester GPA</span>
+        <strong id="gpaResult">0.00</strong>
+        <span id="totalCredits">Total Credits: 0</span>
+      </div>
+    </div>
+
+    <div class="gpa-section">
+      <h2>Cumulative GPA</h2>
+      <p>
+        Enter your previous cumulative GPA and completed credit hours.
+        Your current semester results will be included.
+      </p>
+
+      <div class="gpa-grid">
+        <div class="gpa-field">
+          <label for="previousGpa">Previous Cumulative GPA</label>
+          <input type="number" id="previousGpa"
+                 min="0" max="5" step="0.01"
+                 placeholder="Example: 3.50">
+        </div>
+
+        <div class="gpa-field">
+          <label for="previousCredits">Previously Completed Credits</label>
+          <input type="number" id="previousCredits"
+                 min="0" step="0.5"
+                 placeholder="Example: 60">
+        </div>
+      </div>
+
+      <button class="gpa-btn" id="calculateCumulative" type="button">
+        Calculate Cumulative GPA
+      </button>
+
+      <div class="gpa-result">
+        <span>Your New Cumulative GPA</span>
+        <strong id="cumulativeResult">0.00</strong>
+        <span id="combinedCredits">Total Credits: 0</span>
+      </div>
+    </div>
+
+    <p class="gpa-note">
+      Important: This calculator uses manually selected grade points.
+      University grade conversions and policies may differ.
+      Repeated, excluded, or pass/fail courses may require special handling.
+    </p>
+
+  </div>
+</div>
+
+<script>
+  const courses = document.getElementById("courses");
+  const scaleSelect = document.getElementById("gpaScale");
+
+  function gradeOptions() {
+    const max = Number(scaleSelect.value);
+    const options = [];
+
+    for (let i = max * 4; i >= 0; i--) {
+      const point = i / 4;
+      options.push(
+        `<option value="${point}">${point.toFixed(2)} points</option>`
+      );
+    }
+
+    return options.join("");
+  }
+
+  function addCourse() {
+    const row = document.createElement("div");
+    row.className = "course-row";
+
+    row.innerHTML = `
+      <input type="text"
+             placeholder="Course Name"
+             aria-label="Course name">
+
+      <input type="number"
+             min="0.5"
+             max="30"
+             step="0.5"
+             value="3"
+             aria-label="Credit hours">
+
+      <select aria-label="Grade points">
+        ${gradeOptions()}
+      </select>
+
+      <button type="button" class="remove-btn"
+              aria-label="Remove course">✕</button>
+    `;
+
+    row.querySelector(".remove-btn").addEventListener("click", () => {
+      row.remove();
+      resetResults();
+    });
+
+    courses.appendChild(row);
+    resetResults();
+  }
+
+  function resetResults() {
+    document.getElementById("gpaResult").textContent = "0.00";
+    document.getElementById("totalCredits").textContent = "Total Credits: 0";
+    document.getElementById("cumulativeResult").textContent = "0.00";
+    document.getElementById("combinedCredits").textContent = "Total Credits: 0";
+  }
+
+  function getSemesterData() {
+    let qualityPoints = 0;
+    let creditHours = 0;
+    let valid = true;
+
+    document.querySelectorAll(".course-row").forEach(row => {
+      const creditsInput = row.querySelector('input[type="number"]');
+      const credits = Number(creditsInput.value);
+      const points = Number(row.querySelector("select").value);
+
+      if (
+        creditsInput.value.trim() === "" ||
+        !Number.isFinite(credits) ||
+        credits <= 0 ||
+        !Number.isFinite(points)
+      ) {
+        valid = false;
+        return;
+      }
+
+      qualityPoints += credits * points;
+      creditHours += credits;
+    });
+
+    return {
+      valid,
+      qualityPoints,
+      creditHours,
+      gpa: creditHours > 0 ? qualityPoints / creditHours : 0
+    };
+  }
+
+  function calculateSemester() {
+    const data = getSemesterData();
+
+    if (!data.valid || data.creditHours === 0) {
+      alert("Please add valid courses and credit hours.");
+      return null;
+    }
+
+    document.getElementById("gpaResult").textContent =
+      data.gpa.toFixed(2);
+
+    document.getElementById("totalCredits").textContent =
+      `Total Credits: ${data.creditHours}`;
+
+    return data;
+  }
+
+  function calculateCumulative() {
+    const semester = calculateSemester();
+    if (!semester) return;
+
+    const previousGpaInput = document.getElementById("previousGpa");
+    const previousCreditsInput = document.getElementById("previousCredits");
+
+    const previousGpa = Number(previousGpaInput.value);
+    const previousCredits = Number(previousCreditsInput.value);
+    const maxScale = Number(scaleSelect.value);
+
+    if (
+      previousGpaInput.value.trim() === "" ||
+      previousCreditsInput.value.trim() === "" ||
+      !Number.isFinite(previousGpa) ||
+      !Number.isFinite(previousCredits) ||
+      previousGpa < 0 ||
+      previousGpa > maxScale ||
+      previousCredits < 0
+    ) {
+      alert("Please enter a valid previous GPA and credit hours.");
+      return;
+    }
+
+    const totalCredits = previousCredits + semester.creditHours;
+
+    const totalQualityPoints =
+      previousGpa * previousCredits + semester.qualityPoints;
+
+    const cumulativeGpa = totalQualityPoints / totalCredits;
+
+    document.getElementById("cumulativeResult").textContent =
+      cumulativeGpa.toFixed(2);
+
+    document.getElementById("combinedCredits").textContent =
+      `Total Credits: ${totalCredits}`;
+  }
+
+  document.getElementById("addCourse").addEventListener("click", addCourse);
+
+  document.getElementById("calculate").addEventListener(
+    "click",
+    calculateSemester
+  );
+
+  document.getElementById("calculateCumulative").addEventListener(
+    "click",
+    calculateCumulative
+  );
+
+  scaleSelect.addEventListener("change", () => {
+    document.querySelectorAll(".course-row select").forEach(select => {
+      select.innerHTML = gradeOptions();
+    });
+
+    document.getElementById("previousGpa").max = scaleSelect.value;
+    resetResults();
+  });
+
+  courses.addEventListener("input", resetResults);
+  courses.addEventListener("change", resetResults);
+
+  addCourse();
+  addCourse();
+  addCourse();
+</script>
+
+</body>
+</html>
